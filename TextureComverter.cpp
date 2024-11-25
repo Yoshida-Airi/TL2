@@ -15,6 +15,7 @@ void TextureComverter::ConvertTextureWICoDDS(const std::string& filePath)
 	LoadWICTextureFromFile(filePath);
 
 	//DDS形式に変換して書き出す
+	SaveDDSTextureToFile();
 }
 
 void TextureComverter::LoadWICTextureFromFile(const std::string& filePath)
@@ -22,11 +23,11 @@ void TextureComverter::LoadWICTextureFromFile(const std::string& filePath)
 	//ファイルパスをワイド文字列に変換
 	std::wstring wFilePath = ConvertMultiByteStringToWideStirng(filePath);
 
-	////テクスチャを読み込む
-	//HRESULT result = LoadFromWICFile(wFilePath.c_str(), DirectX::WIC_FLAGS_NONE, &metaData_, scratchImage_);
-	//assert(SUCCEEDED(result));
+	//テクスチャを読み込む
+	HRESULT result = LoadFromWICFile(wFilePath.c_str(), DirectX::WIC_FLAGS_NONE, &metaData_, scratchImage_);
+	assert(SUCCEEDED(result));
 
-	//SeparateFilePath(wFilePath);
+	SeparateFilePath(wFilePath);
 }
 
 std::wstring TextureComverter::ConvertMultiByteStringToWideStirng(const std::string& mString)
@@ -50,7 +51,7 @@ void TextureComverter::SeparateFilePath(const std::wstring& filePath)
 	std::wstring exceptExt;
 
 	//区切り文字’,’が出てくる一番最後の部分を検索
-	pos1 = filePath.rfind(',');
+	pos1 = filePath.rfind('.');
 	//検索がヒットしたら
 	if (pos1 != std::wstring::npos)
 	{
@@ -82,10 +83,28 @@ void TextureComverter::SeparateFilePath(const std::wstring& filePath)
 	//検索がヒットしたら
 	if (pos1 != std::wstring::npos)
 	{
-		
+		//区切り文字の後ろをファイル拡張子として保存
+		directoryPath_ = exceptExt.substr(0, pos1 + 1);
+		//区切り文字の前までを抜き出す
+		fileName_ = exceptExt.substr(pos1 + 1, exceptExt.size() - pos1 - 1);
+		return;
 	}
 
 	//区切り文字がないのでファイル名のみとして扱う
 	directoryPath_ = L"";
 	fileName_ = exceptExt;
+}
+
+void TextureComverter::SaveDDSTextureToFile()
+{
+	HRESULT result;
+
+	//読み込んだテクスチャをSRGBとして扱う
+	metaData_.format = DirectX::MakeSRGB(metaData_.format);
+
+	//出力ファイル名を設定する
+	std::wstring filePath = directoryPath_ + fileName_ + L".dds";
+
+	result = DirectX::SaveToDDSFile(scratchImage_.GetImages(), scratchImage_.GetImageCount(), metaData_, DirectX::DDS_FLAGS_NONE, filePath.c_str());
+	assert(SUCCEEDED(result));
 }

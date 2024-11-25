@@ -36,6 +36,10 @@ private:
 	/// <param name="filePath">ファイルパス</param>
 	void SeparateFilePath(const std::wstring& filePath);
 
+	/// <summary>
+	/// DDSテクスチャとしてファイルを書き出し
+	/// </summary>
+	void SaveDDSTextureToFile();
 private:
 
 	//画像の情報
