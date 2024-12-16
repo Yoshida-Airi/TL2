@@ -38,7 +38,7 @@ int main(int argc,char*argv[])
 	char** options = argv + NumArgument;
 
 	//テクスチャ変換
-	converter.ConvertTextureWICoDDS(argv[kFilePath]);
+	converter.ConvertTextureWICoDDS(argv[kFilePath],numOptions,options);
 
 	//COMライブラリの終了
 	CoUninitialize();

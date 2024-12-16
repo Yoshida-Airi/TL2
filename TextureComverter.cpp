@@ -127,7 +127,7 @@ void TextureComverter::SaveDDSTextureToFile(int numOptions, char* options[])
 	DirectX::ScratchImage mipChain;
 	//ミップマップ生成
 	result = DirectX::GenerateMipMaps(scratchImage_.GetImages(), scratchImage_.GetImageCount(), metaData_,
-		DirectX::TEX_FILTER_DEFAULT, 0, mipChain);
+		DirectX::TEX_FILTER_DEFAULT, mipLevel, mipChain);
 
 	if (SUCCEEDED(result))
 	{
